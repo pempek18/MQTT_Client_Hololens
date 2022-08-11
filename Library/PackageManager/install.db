@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "packages": {
+    "com.microsoft.mixedreality.toolkit.examples": {
+      "tarball": {
+        "hash": "38699c4ce8cf",
+        "mtime": 1653477358185,
+        "size": 55036630,
+        "localPath": "C:\\Users\\pzadroga\\My project\\Packages\\MixedReality\\com.microsoft.mixedreality.toolkit.examples-2.7.3.tgz"
+      }
+    },
+    "com.microsoft.mixedreality.toolkit.extensions": {
+      "tarball": {
+        "hash": "dd97a7745746",
+        "mtime": 1653477325910,
+        "size": 1130819,
+        "localPath": "C:\\Users\\pzadroga\\My project\\Packages\\MixedReality\\com.microsoft.mixedreality.toolkit.extensions-2.7.3.tgz"
+      }
+    },
+    "com.microsoft.mixedreality.toolkit.figmabridge": {
+      "tarball": {
+        "hash": "b20dced74a18",
+        "mtime": 1653477324155,
+        "size": 796147,
+        "localPath": "C:\\Users\\pzadroga\\My project\\Packages\\MixedReality\\com.microsoft.mixedreality.toolkit.figmabridge-0.1.1.tgz"
+      }
+    },
+    "com.microsoft.mixedreality.toolkit.tools": {
+      "tarball": {
+        "hash": "2c119bd3c146",
+        "mtime": 1653477329894,
+        "size": 2110451,
+        "localPath": "C:\\Users\\pzadroga\\My project\\Packages\\MixedReality\\com.microsoft.mixedreality.toolkit.tools-2.7.3.tgz"
+      }
+    },
+    "com.microsoft.mixedreality.toolkit.foundation": {
+      "tarball": {
+        "hash": "3bad99c89252",
+        "mtime": 1653477337648,
+        "size": 8670682,
+        "localPath": "C:\\Users\\pzadroga\\My project\\Packages\\MixedReality\\com.microsoft.mixedreality.toolkit.foundation-2.7.3.tgz"
+      }
+    },
+    "com.microsoft.mixedreality.toolkit.standardassets": {
+      "tarball": {
+        "hash": "2095abe3b61d",
+        "mtime": 1653477335402,
+        "size": 5303497,
+        "localPath": "C:\\Users\\pzadroga\\My project\\Packages\\MixedReality\\com.microsoft.mixedreality.toolkit.standardassets-2.7.3.tgz"
+      }
+    }
+  }
+}

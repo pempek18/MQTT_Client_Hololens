@@ -12,10 +12,14 @@ public class Button : MonoBehaviour
     static string[] Topics = new string[1] { "Tornado RD/Tornado RD/TcIotCommunicator/Json/Tx/Data" };
     static byte[] qosLevel = new byte[1] { 0 };
     static byte[] IpAddress = new byte[4] { 172, 31, 166, 220 };
-    string Json;
+    MqttClient mqttClient = new MqttClient(new IPAddress(IpAddress));
+    ReciveData RD;
+    bool DateRecived = false;
 
-    [SerializeField] public TextMeshPro NazwaPrzycisku;
-    int ClickCnt = 0;
+    [SerializeField] public TextMeshProUGUI ButtonStart;
+    [SerializeField] public TextMeshProUGUI ButtonStop;
+    [SerializeField] private TextMeshProUGUI TextStatus;
+    [SerializeField] private TextMeshProUGUI TextData;
 
 
     // Start is called before the first frame update
@@ -23,20 +27,6 @@ public class Button : MonoBehaviour
     void Start()
     {
         Debug.Log("Start aplikacji");
-
-        MqttClient mqttClient = new MqttClient(new IPAddress( IpAddress )) ;
-
-        mqttClient.Connect("Tornado", "Admin", "04713", true, qosLevel[0], true, Topics[0],"",false,500);
-        //mqttClient.Connect("Tornado", "Admin", "04713");
-
-        mqttClient.MqttMsgPublishReceived += MqttClient_MqttMsgPublishReceived;
-
-        mqttClient.Subscribe(Topics, qosLevel);
-
-        if (mqttClient.IsConnected)
-        {
-
-        }
     }
 
     private void MqttClient_MqttMsgPublishReceived(object sender, uPLibrary.Networking.M2Mqtt.Messages.MqttMsgPublishEventArgs e)
@@ -46,33 +36,52 @@ public class Button : MonoBehaviour
 
         Console.WriteLine("Topic : " + e.Topic);
 
-        ReciveData RD = JsonConvert.DeserializeObject<ReciveData>(msg);
+        RD = JsonConvert.DeserializeObject<ReciveData>(msg);
 
-        foreach (var propertinfo in RD.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
-        {
-            Console.WriteLine("RD." + propertinfo.ToString() + " : \t\t\t\t" + propertinfo.GetValue(RD, null));
-            if (propertinfo.Name == "values")
-            {
-                foreach (var propertyinfo in RD.values.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
-                {
-                    Debug.Log("RD.Values" + propertyinfo.ToString() + " : \t\t\t\t" + propertyinfo.GetValue(RD.values, null));
-                }
-            }
-        }
+        DateRecived = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (DateRecived)
+        {
+            TextData.text = "";
+
+            foreach (var propertinfo in RD.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
+            {
+                Console.WriteLine("RD." + propertinfo.ToString() + " : \t\t\t\t" + propertinfo.GetValue(RD, null));
+                if (propertinfo.Name == "values")
+                {
+                    foreach (var propertyinfo in RD.values.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
+                    {
+                        TextData.text += "RD.Values" + propertyinfo.ToString() + " : \t\t\t\t" + propertyinfo.GetValue(RD.values, null);
+                    }
+                }
+            }
+        }
     }
 
 
-    public void OnClick()
+    public void OnClickStart()
     {
-        Debug.Log("Wciœniêcie przycisku");
-        ClickCnt++;
-        NazwaPrzycisku.text = ClickCnt.ToString();
+        mqttClient.Connect("Tornado", "Admin", "04713", true, qosLevel[0], true, Topics[0], "", false, 500);
+        //mqttClient.Connect("Tornado", "Admin", "04713");
+
+        mqttClient.MqttMsgPublishReceived += MqttClient_MqttMsgPublishReceived;
+
+        mqttClient.Subscribe(Topics, qosLevel);
+
+        if (mqttClient.IsConnected)
+            TextStatus.text = "connected";
+    }
+    public void OnClickStop()
+    {
+        DateRecived = false;
+        TextData.text = "";
+        mqttClient.MqttMsgPublishReceived -= MqttClient_MqttMsgPublishReceived;
+        //mqttClient.Disconnect();
+        TextStatus.text = "disconnected";
     }
 
     class ReciveData

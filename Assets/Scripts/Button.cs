@@ -15,6 +15,7 @@ public class Button : MonoBehaviour
     MqttClient mqttClient = new MqttClient(new IPAddress(IpAddress));
     ReciveData RD;
     bool DateRecived = false;
+    bool ReciverStart = false;
 
     [SerializeField] public TextMeshProUGUI ButtonStart;
     [SerializeField] public TextMeshProUGUI ButtonStop;
@@ -31,14 +32,17 @@ public class Button : MonoBehaviour
 
     private void MqttClient_MqttMsgPublishReceived(object sender, uPLibrary.Networking.M2Mqtt.Messages.MqttMsgPublishEventArgs e)
     {
-        ASCIIEncoding ascii = new ASCIIEncoding();
-        string msg = ascii.GetString(e.Message); ;
+        if (ReciverStart)
+        {
+            ASCIIEncoding ascii = new ASCIIEncoding();
+            string msg = ascii.GetString(e.Message); ;
 
-        Console.WriteLine("Topic : " + e.Topic);
+            Console.WriteLine("Topic : " + e.Topic);
 
-        RD = JsonConvert.DeserializeObject<ReciveData>(msg);
+            RD = JsonConvert.DeserializeObject<ReciveData>(msg);
 
-        DateRecived = true;
+            DateRecived = true;
+        }
     }
 
     // Update is called once per frame
@@ -50,12 +54,12 @@ public class Button : MonoBehaviour
 
             foreach (var propertinfo in RD.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
             {
-                Console.WriteLine("RD." + propertinfo.ToString() + " : \t\t\t\t" + propertinfo.GetValue(RD, null));
+                TextData.text += "RD." + propertinfo.ToString() + " : \t" + propertinfo.GetValue(RD, null) + "\n";
                 if (propertinfo.Name == "values")
                 {
                     foreach (var propertyinfo in RD.values.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
                     {
-                        TextData.text += "RD.Values" + propertyinfo.ToString() + " : \t\t\t\t" + propertyinfo.GetValue(RD.values, null);
+                        TextData.text += "RD.Values" + propertyinfo.ToString() + " : \t" + propertyinfo.GetValue(RD.values, null) + "\n";
                     }
                 }
             }
@@ -74,14 +78,22 @@ public class Button : MonoBehaviour
 
         if (mqttClient.IsConnected)
             TextStatus.text = "connected";
+
+        ReciverStart = true;
     }
     public void OnClickStop()
     {
+        ReciverStart = false;
         DateRecived = false;
-        TextData.text = "";
+
+        mqttClient.Unsubscribe(Topics);
         mqttClient.MqttMsgPublishReceived -= MqttClient_MqttMsgPublishReceived;
         //mqttClient.Disconnect();
-        TextStatus.text = "disconnected";
+
+        TextData.text = "";
+
+        if (!mqttClient.IsConnected)
+            TextStatus.text = "disconnected";
     }
 
     class ReciveData
